@@ -22,17 +22,22 @@ class AuthViewModel: ObservableObject {
         didSet {
             checkButtonEnable(emailText)
             loginStatusMessage = ""
+            imageUploadStatusMessage = ""
         }
     }
     @Published var passwordText = "" {
         didSet {
             checkButtonEnable(emailText)
             loginStatusMessage = ""
+            imageUploadStatusMessage = ""
         }
     }
     
     @Published var isDisabled: Bool = true
     @Published var loginStatusMessage = ""
+    @Published var imageUploadStatusMessage = ""
+    @Published var shouldShowImagePicker: Bool = false
+    @Published var image: UIImage?
 }
 
 extension AuthViewModel {
@@ -56,16 +61,19 @@ extension AuthViewModel {
         emailText = ""
         passwordText = ""
         loginStatusMessage = ""
+        imageUploadStatusMessage = ""
     }
     
     func buttonTapped() {
         if isLoginMode {
-            FirebaseAuth.shared.login(emailText, password: passwordText) { [weak self] error in
-                self?.loginStatusMessage = error?.localizedDescription ?? CustomErrorDescription.signInError
+            FirebaseAuth.shared.login(emailText, password: passwordText) { [weak self] status in
+                self?.loginStatusMessage = status
             }
         } else {
-            FirebaseAuth.shared.createAccount(emailText, passwordText) { [weak self] error in
-                self?.loginStatusMessage = error?.localizedDescription ?? CustomErrorDescription.signUpError
+            FirebaseAuth.shared.createAccount(emailText, passwordText, image: image) { [weak self] status in
+                self?.loginStatusMessage = status
+            } imageHandler: { [weak self] status in
+                self?.imageUploadStatusMessage = status
             }
         }
     }

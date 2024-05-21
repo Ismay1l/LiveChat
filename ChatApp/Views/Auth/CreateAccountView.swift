@@ -13,20 +13,37 @@ struct CreateAccountView: View {
     @Binding var passwordText: String
     @Binding var isDisabled: Bool
     @Binding var statusMessage: String
+    @Binding var imageUploadStatusMessage: String
+    @Binding var shouldShowImagePicker: Bool
+    @Binding var image: UIImage?
     
     var buttonTapped: () -> Void
+    private let imageSize: (width: CGFloat, height: CGFloat) = (width: 120, height: 120)
     
     var body: some View {
         
         VStack(spacing: 16) {
             
             Button {
-                
+                shouldShowImagePicker.toggle()
             } label: {
-                Image(systemName: "person.fill")
-                    .font(.system(size: 64))
+                VStack {
+                    if let image = image {
+                        Image(uiImage: image)
+                            .resizable()
+                            .frame(width: imageSize.width, height: imageSize.height)
+                            .scaledToFill()
+                            .cornerRadius(imageSize.width / 2)
+                    } else {
+                        Image(systemName: "person.fill")
+                            .font(.system(size: 64))
+                            .padding()
+                            .customForegroundColor()
+                    }
+                }
+                .overlay( RoundedRectangle(cornerRadius: imageSize.width / 2)
+                    .stroke(.black, lineWidth: 3))
             }
-            .padding()
             
             Group {
                 TextField(text: $emailText) {
@@ -64,25 +81,10 @@ struct CreateAccountView: View {
             
             Text(statusMessage)
                 .foregroundColor(.red)
+            
+            Text(imageUploadStatusMessage)
+                .foregroundColor(.red)
         }
         .padding([.leading, .trailing], 12)
-    }
-}
-
-
-struct CustomBackgroundColor: ViewModifier {
-    
-    @Environment(\.colorScheme) var colorScheme
-    
-    func body(content: Content) -> some View {
-        content
-            .foregroundColor(colorScheme == .dark ? .white : .black)
-    }
-}
-
-extension View {
-    
-    func customForeColor() -> some View {
-        modifier(CustomBackgroundColor())
     }
 }

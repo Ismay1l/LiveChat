@@ -37,7 +37,10 @@ struct AuthView: View {
                         emailText: $authViewModel.emailText,
                         passwordText: $authViewModel.passwordText,
                         isDisabled: $authViewModel.isDisabled,
-                        statusMessage: $authViewModel.loginStatusMessage
+                        statusMessage: $authViewModel.loginStatusMessage,
+                        imageUploadStatusMessage: $authViewModel.imageUploadStatusMessage,
+                        shouldShowImagePicker: $authViewModel.shouldShowImagePicker,
+                        image: $authViewModel.image
                     ) {
                         authViewModel.buttonTapped()
                     }
@@ -46,6 +49,9 @@ struct AuthView: View {
             .background(Color(.init(white: 0.0, alpha: 0.05))
                 .ignoresSafeArea())
             .navigationTitle(authViewModel.isLoginMode ? "Log in" : "Create Account")
+            .fullScreenCover(isPresented: $authViewModel.shouldShowImagePicker) {
+                ImagePicker(image: $authViewModel.image)
+            }
         }
     }
 }
